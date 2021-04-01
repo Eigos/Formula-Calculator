@@ -1,0 +1,950 @@
+﻿
+#include <iostream>
+#include <string>
+#include <vector>
+#include <windows.h>
+#include <conio.h>
+#include <fstream>
+
+#include "formul.h"
+#include "kontrol.h"
+#include "graph_render.h"
+
+Kontrol kontrol;
+
+const char* DosyaVarsYol = { "D:\\Cpp Projeler\\Formul Hesaplama Uygulaması\\FormulHesaplama.mBin" };
+
+//void DeneyKumesiMenu();
+void DeneylerMenu();
+void DeneyMenu(int deneyID);
+void AnaMenu();
+void FormulMenu();
+void AyarlarMenu();
+
+void DosyayaKayit();
+void DosyadanOku(const char* dosyaYolu);
+
+void YeniFormulOlusturma();
+void KomutKontrol(std::string metin);
+
+inline int GirdiAlInt();
+inline std::string GirdiAlStr();
+
+void ClearScreenWin();
+
+int main()
+{
+
+	//kontrol.FormulYeni("abs(DegerA^(abs(DegerA-DegerB)))");
+	//kontrol.FormulYeni("DegerA-DegerB^sin(DegerA)");
+	//kontrol.FormulYeni("10^(DegerA/DegerB^(cos(30)))");
+	//kontrol.FormulYeni("log(30)*log(2)");
+	
+	//RenderOpenGL graph;
+
+
+
+	while (1) {
+		AnaMenu();
+	}
+	return 0;
+}
+
+/*
+void DeneyKumesiMenu() {
+	ClearScreenWin();
+	std::cout << "<1>Yeni Deney Kumesi Olustur <2>Deney Kumesi Sec <3>Deney Kumesi Sil <4>Formul Menusu\n";
+
+	switch (GirdiAlInt())
+	{
+		//Yeni Deney Kumesi Olustur
+	case 1: {
+		DeneyKumesi* deneyKumesi = new DeneyKumesi(g_DeneyKumesi.size());
+		g_DeneyKumesi.push_back(deneyKumesi);
+		break;
+	}
+
+		  //Deney Kumesi Sec
+	case 2: {
+		ClearScreenWin();
+		// Kayıtlı deney kümesi yoksa
+		if (g_DeneyKumesi.size() == 0) {
+			std::cout << "Kayitli kume bulunamadi!!!\n";
+			std::cout << "Yeni kume olusturmak ister misiniz?\n";
+			std::cout << "<1> EVET\t<2> HAYIR\n";
+
+			if (GirdiAlInt() == 1) {
+				DeneyKumesi* deneyKumesi = new DeneyKumesi(g_DeneyKumesi.size());
+				g_DeneyKumesi.push_back(deneyKumesi);
+				std::cout << "Yeni kume basariyla olusturuldu\n";
+				std::cout << "Devam etmek icin herhangi bir tusa basiniz...\n";
+				_getch();
+			}
+			else {
+				ClearScreenWin();
+				std::cout << "Yeni kume olusturulmadi\n";
+				std::cout << "Devam etmek icin herhangi bir tusa basiniz...\n";
+				_getch();
+			}
+			break;
+		}
+
+		// Deney Kümesi seç
+		std::cout << "Kayitli deney kumeleriniz listeleniyor: \n";
+		for (size_t i = 0; i < g_DeneyKumesi.size(); i++) {
+			std::cout << "<" << i + 1 << ">" << g_DeneyKumesi[i]->getName() << std::endl;
+		}
+
+		int girdi = GirdiAlInt();
+		girdi--;
+		if (girdi < g_DeneyKumesi.size() && girdi >= 0) {
+			DeneylerMenu(g_DeneyKumesi[girdi]);
+		}
+
+		break;
+	}
+
+		  //Deney Kumesi Sil
+	case 3: {
+		ClearScreenWin();
+		// Kayıtlı deney kümesi yoksa
+		if (g_DeneyKumesi.size() == 0) {
+			std::cout << "Kayitli kume bulunamadi!!!\n";
+			std::cout << "Yeni kume olusturmak ister misiniz?\n";
+			std::cout << "<1> EVET\t<2> HAYIR\n";
+
+			if (GirdiAlInt() == 1) {
+				DeneyKumesi* deneyKumesi = new DeneyKumesi(g_DeneyKumesi.size());
+				g_DeneyKumesi.push_back(deneyKumesi);
+			}
+			else {
+				ClearScreenWin();
+				std::cout << "Yeni kume olusturulmadi\n";
+				std::cout << "Devam etmek icin herhangi bir tusa basiniz...\n";
+				_getch();
+			}
+			break;
+		}
+
+		// Silinecek deney kümesini seç
+		std::cout << "Kayitli deney kumeleriniz listeleniyor: \n";
+		for (size_t i = 0; i < g_DeneyKumesi.size(); i++) {
+			std::cout << "<" << i + 1 << ">" << g_DeneyKumesi[i]->getName() << std::endl;
+		}
+
+		int girdi = GirdiAlInt();
+		girdi--;
+		if (girdi < g_DeneyKumesi.size() && girdi >= 0) {
+			delete g_DeneyKumesi[girdi];
+			g_DeneyKumesi.erase(g_DeneyKumesi.begin() + girdi);
+		}
+
+	}
+
+		  //Formul Menusu
+	case 4: {
+		ClearScreenWin();
+		FormulMenu();
+
+	}
+
+	default:
+		break;
+	}
+
+
+}
+*/
+
+void AnaMenu() {
+	std::cout << "1 Deneyler menu\t2 Kayit \n";
+	int girdi = GirdiAlInt();
+	if (girdi == 1) {
+		DeneylerMenu();
+	}
+	else if (girdi == 2) {
+		AyarlarMenu();
+	}
+}
+
+void DeneylerMenu() {
+	bool MenuKapat = false;
+	while (!MenuKapat) {
+		//Menü işlemleri
+		std::cout << "Deneyler Menu" << std::endl;
+		std::cout << "<1>Yeni Deney Ekle <2>Deney Sil <3>Deney Sec <4>Formul Menusu <0>Deney Menusunden Cik\n";
+		switch (GirdiAlInt())
+		{
+			//1-Yeni deney ekle
+		case 1: {
+			if (kontrol.DeneyYeni() != -1) {
+				ClearScreenWin();
+				std::cout << "Yeni deney olusturuldu!\n";
+			}
+			else {
+				std::cout << "BEKLENMEDIK HATA!!!\n";
+			}
+		}break;
+
+			//2-Deney sil
+		case 2: {
+
+			if (kontrol.getDeneySayisi() == 0) {
+				ClearScreenWin();
+				std::cout << "Kayitli deney bulunamadi!\n";
+				break;
+			}
+
+			size_t deneySayisi = kontrol.getDeneySayisi();
+			std::cout << "Kayitli Deneyler: \n";
+			for (int i = 0; i < deneySayisi; i++) {
+				std::cout << "<" << i + 1 << ">" << kontrol.getDeneyAdi(i) << std::endl;
+			}
+
+			std::cout << "Silemk istediginiz deneyi seciniz: ";
+			int deneyNo = GirdiAlInt();
+			std::cout << std::endl;
+
+			if ((deneyNo > 0) && (deneyNo <= deneySayisi)) {
+				deneyNo--;
+				const Deney* deney = kontrol.getDeney(deneyNo);
+				if (kontrol.DeneySil(deneyNo) == Status::Done) {
+					ClearScreenWin();
+					std::string deneyKulForm(deney->getFormulYazim());
+					const int deneyGosUzunluk = 35; // Deneyin formülünün gösterilicek uzunluğu
+
+					if (deneyKulForm.size() > deneyGosUzunluk) {
+						deneyKulForm.resize(deneyGosUzunluk);
+						deneyKulForm += "...";
+					}
+
+					std::cout << "'" << deney->DeneyAdi.c_str() << "\t" << deneyKulForm.c_str() << "' Basariyla silinmistir!\n";
+				}
+				else {
+					std::cout << "BEKLENMEDIK HATA!!!\n";
+				}
+			}
+			else {
+
+				ClearScreenWin();
+				std::cout << "Secim isleminiz iptal edilmistir!\n";
+				break;
+			}
+		}break;
+
+			//3-Deney Sec
+		case 3: {
+			//Deney Seç
+			size_t deneySayisi = kontrol.getDeneySayisi();
+			if (deneySayisi > 0) {
+				std::cout << "Kayitli Deneyler: \n";
+				for (int i = 0; i < deneySayisi; i++) {
+					const Deney* deney = kontrol.getDeney(i);
+					std::string deneyKulForm(deney->getFormulYazim());
+					const int deneyGosUzunluk = 35; // Deneyin formülünün gösterilicek uzunluğu
+
+					if (deneyKulForm.size() > deneyGosUzunluk) {
+						deneyKulForm.resize(deneyGosUzunluk);
+						deneyKulForm += "...";
+					}
+					std::cout << "<" << i + 1 << ">" << deney->DeneyAdi.c_str() << ":\t"
+						<< deneyKulForm.c_str() << std::endl;
+				}
+				std::cout << "<0> Islemi iptal et\n";
+				std::cout << "Secmek istediginiz deneyin numarasi: ";
+				int deneyNo = GirdiAlInt();
+				if (deneyNo == 0) {
+					ClearScreenWin();
+					std::cout << "Secim isleminiz iptal edilmistir!\n";
+					break;
+				}
+
+				deneyNo--;
+
+				if (kontrol.getDeneySayisi() > deneyNo && deneyNo >= 0) {
+					DeneyMenu(deneyNo);
+				}
+
+			}
+			else {
+				std::cout << "Kayitli deneyiniz bulunmamakta!\n";
+				std::cout << "Yeni bir deney olusturmak ister misiniz?\n";
+				std::cout << "<1>Evet <2>Hayir\n";
+				if (GirdiAlInt() == 1) {
+					kontrol.DeneyYeni();
+					DeneyMenu(0);
+					ClearScreenWin();
+					std::cout << "Yeni deney olusturuldu!\n";
+				}
+			}
+
+		}break;
+
+			//4-Formül menüsü
+		case 4: {
+			FormulMenu();
+		}break;
+
+			//0-Deney menüsünden çık
+		case 0: {
+			ClearScreenWin();
+			std::cout << "Deney menusunden cikiliyor...\n";
+			MenuKapat = true;
+
+		}break;
+
+		default:
+			std::cout << "Hatali girdi!\n";
+			break;
+		}
+
+
+	}
+
+}
+
+void DeneyMenu(int deneyID) {
+
+	//değişken düzenleme, formul seçme, isim düzenleme ve menüden çıkma seçenkleri olmalı 
+
+	bool DeneyMenuKapat = false;
+	ClearScreenWin();
+
+	while (!DeneyMenuKapat) {
+		Deney* deney = kontrol[deneyID];
+		std::cout << "'" << deney->DeneyAdi.c_str() << "' isimli deneyin menusu\n";
+		std::cout << "<1> Degisken duzenleme <2>Formul secme <3>Deney ismi duzenleme <4>Deney Sonucu <0>Menuden cikis\n";
+		switch (GirdiAlInt())
+		{
+			//Degisken duzenleme
+		case 1: {
+			if (!deney->getFormulAtandi()) {
+				std::cout << "Formul atanmadi. Lutfen once formul atayiniz.\n";
+				break;
+			}
+
+			int degiskenSayisi = deney->getDegiskenSayisi();
+
+			//Değişken için yeni değer al
+			for (int i = 0; i < degiskenSayisi; i++) {
+				std::string sembol = deney->getDegiskenIsim(i);
+				float degerEski = deney->getDegiskenDeger(i);
+				std::cout << "Eski (" << sembol << ")" << "Degisken: " << degerEski << std::endl;
+				std::cout << "Yeni (" << sembol << ")" << "Degisken: ";
+				std::string degerYeni = GirdiAlStr();
+				std::cout << std::endl;
+				if (degerYeni.size() != 0) {
+					float degerYenif = std::stof(degerYeni);
+					deney->setDegiskenDeger(i, degerYenif);
+				}
+			}
+
+		}break;
+
+			//Deney icin yeni formulu sec
+		case 2: {
+
+			if (kontrol.FormulVar() != 0) {
+				std::cout << "Deneyiniz icin kullanacaginiz yeni formulu seciniz.\n";
+
+				for (int i = 0; i < kontrol.getFormulSayisi(); i++) {
+
+					const Formul* formul = kontrol.getFormul(i);
+					std::cout << "<" << i + 1 << "> " << formul->getFormulIsmi().c_str() << std::endl;
+				}
+
+
+				int secilenFormulID = GirdiAlInt();
+				if (secilenFormulID > 0) {
+					secilenFormulID--;
+					const Formul* secilenFormul = kontrol.getFormul(secilenFormulID);
+
+					std::cout << "'" << secilenFormul->getFormulIsmi().c_str() << "'" << " isimli formul secildi!\n";
+					kontrol.DeneyFormulKullan(secilenFormulID, deney);
+
+				}
+				else {
+					std::cout << "Secim iptal edildi";
+				}
+			}
+			else {
+				std::cout << "Kayitli formul bulunamadi.\n";
+			}
+		}break;
+
+			//Deney ismi duzenleme 
+		case 3: {
+			ClearScreenWin();
+			std::cout << "Degisiklik yapmak istemiyorsaniz enter'a basin\n";
+			std::cout << "Deneyin eski adi: " << deney->DeneyAdi.c_str() << std::endl;
+			std::cout << "Deneyin yeni adi: ";
+			std::string yeniAd = GirdiAlStr();
+			if (!yeniAd.empty()) {
+				deney->DeneyAdi = yeniAd;
+			}
+
+		}break;
+
+			//Deney Sonucunu bul
+		case 4: {
+			ClearScreenWin();
+			std::cout << "Deneyin sonucu : " << deney->getSonuc();
+			std::cout << std::endl;
+		}break;
+
+			//Menuden cikis
+		case 0: {
+			DeneyMenuKapat = true;
+		}break;
+
+		default: {
+			std::cout << "\nHatali girdi!!!\n";
+		}
+			   break;
+		}
+
+	}
+
+}
+
+void AyarlarMenu() {
+	std::cout << "<1> Formul ve Deneyi kaydet <2> Kayitli dosyadan Formul ve Deneyleri al (!Mevcut deney ve formuller SILINIR!) <3> Ayarlar Menusunden Cik \n";
+	
+	switch (GirdiAlInt()) {
+
+	case 1: {
+
+		DosyayaKayit();
+		break;
+	}
+
+	case 2: {
+		DosyadanOku(DosyaVarsYol);
+		break;
+	}
+
+	case 0: {
+
+		break;
+	}
+
+	
+	default: {
+
+		std::cout << "\nHatali girdi";
+		break;
+	}
+	}
+
+	ClearScreenWin();
+}
+
+
+// DENEY
+/*
+// 1 - Deney Sayısı
+// 2 - Deney Adı
+// 3 - Formül ismi
+// 4 - Formul Yazımı
+// 5 - Formul Açıklama
+// 6 - Değişken Sayısı
+// 7 - Değişken isim
+// 8 - Değişken indis
+// 9 - Değişken sembol
+// 10- Değişken tanım
+// 11- Değişken değer
+// 12- Değişken Değer atandı
+*/
+// FORMUL
+/*
+// 1 - Formul Sayısı
+// 2 - Formul ismi
+// 3 - Formül Yazımı
+// 4 - Formül açıklaması
+// 5 - Değişken sayısı
+// 6 - Değişken isim
+// 7 - Değişken indis
+// 8 - Değişken sembol
+// 9 - Değişken tanım
+// 10- Değişken değer
+// 11- Değişken değer atandı
+*/
+void DosyayaKayit() {
+	std::fstream outFile;
+
+	size_t bufferSize = 1024 * 100;
+	std::string buffer;
+
+	buffer += std::to_string(kontrol.getDeneySayisi());
+	buffer += "\n";
+	for (int i = 0; i < kontrol.getDeneySayisi(); i++) {
+		Deney* deney = kontrol[i];
+		buffer += deney->DeneyAdi + "\n" + deney->getFormulIsmi() + "\n" + deney->getFormulYazim() + "\n" + deney->getFormulAciklama() + "\n";
+		buffer += std::to_string(deney->getDegiskenSayisi());
+		buffer += "\n";
+
+		for (int j = 0; j < deney->getDegiskenSayisi(); j++) {
+			buffer += deney->getDegiskenIsim(j) + "\n" + deney->getDegiskenIndis(j) + "\n" + deney->getDegiskenSembol(j) +
+				"\n" + deney->getDegiskenTanim(j) + "\n";
+			buffer += std::to_string(deney->getDegiskenDeger(j)) + "\n" + std::to_string(deney->getDegiskenDegerAtandi(j)) + "\n";
+		}
+	}
+
+	buffer += std::to_string(kontrol.getFormulSayisi());
+	buffer += "\n";
+	for (int i = 0; i < kontrol.getFormulSayisi(); i++) {
+		const Formul* formul = kontrol.getFormul(i);
+
+		buffer += formul->getFormulIsmi() + "\n" + formul->getFormulYazim() + "\n" + formul->getFormulAciklama() + "\n";
+		buffer += std::to_string(formul->getDegiskenSayisi());
+		buffer += "\n";
+		for (int j = 0; j < formul->getDegiskenSayisi(); j++) {
+			buffer += formul->getDegiskenIsim(j) + "\n" + formul->getDegiskenIndis(j) + "\n" + formul->getDegiskenSembol(j) +
+				"\n" + formul->getDegiskenTanim(j) + "\n";
+			buffer += std::to_string(formul->getDegiskenDeger(j)) + "\n" + std::to_string(formul->getDegiskenDegerAtandi(j)) + "\n";
+		}
+	}
+
+	outFile.open("FormulHesaplama.mBin", std::ios::out | std::ios::trunc);
+
+	if (outFile.is_open())
+	{
+		outFile.write(buffer.c_str(), buffer.size());
+
+	}
+	else {
+		std::cout << "Dosya acilamadi!\n";
+		return;
+	}
+
+	if (outFile.is_open()) {
+		outFile.close();
+	}
+}
+
+// Dosyadan yükle ve yer değiştir
+void DosyadanOku(const char* dosyaYolu) {
+	std::ifstream dosya;
+
+	std::string temp;
+
+	dosya.open(dosyaYolu);
+
+	if (!dosya.is_open()) {
+		std::cout << "\nDosya okunamadi" << std::endl;
+		return;
+	}
+
+	char backSpace = 8;
+	size_t deneySayisi = 0;
+
+	std::getline(dosya, temp);
+	if (!temp.empty()) {
+		deneySayisi = std::stoull(temp);
+		kontrol.Temizle();
+	}
+
+	for (size_t i = 0; i < deneySayisi; i++) {
+		
+		Deney* yeniDeney;
+		std::string deneyAdi;
+		std::string formulIsmi;
+		std::string formulYazimi;
+		std::string formulAciklama;
+
+
+		std::getline(dosya, deneyAdi);
+		std::getline(dosya, formulIsmi);
+		std::getline(dosya, formulYazimi);
+		std::getline(dosya, formulAciklama);
+
+		yeniDeney = new Deney(deneyAdi.c_str());
+
+		yeniDeney->setFormulIsmi(formulIsmi);
+		yeniDeney->setFormulYazim(formulYazimi);
+		yeniDeney->setFormulAciklama(formulAciklama);
+
+		std::getline(dosya, temp);
+
+		size_t degiskenSayisi = 0;
+		degiskenSayisi = std::stoull(temp);
+
+		for (size_t j = 0; j < degiskenSayisi; j++) {
+
+			std::string degiskenIsmi;
+			std::string degiskenIndis;
+			std::string degiskenSembol;
+			std::string degiskenTanim;
+			std::string degiskenDegerS;
+			std::string degiskenDegerAtandi;
+
+			float degiskenDegerF = 0; 
+
+
+			std::getline(dosya, degiskenIsmi);
+			std::getline(dosya, degiskenIndis);
+			std::getline(dosya, degiskenSembol);
+			std::getline(dosya, degiskenTanim);
+			std::getline(dosya, degiskenDegerS);
+			std::getline(dosya, degiskenDegerAtandi);
+
+
+			degiskenDegerF = std::stof(degiskenDegerS);
+
+			yeniDeney->setDegisken(j, degiskenSembol.c_str(), degiskenIndis.c_str(), degiskenTanim.c_str(), degiskenIsmi.c_str(), &degiskenDegerF);
+		}
+
+		kontrol.DeneyYeni(yeniDeney);
+
+
+	}
+
+	size_t formulSayisi = 0;
+
+	std::getline(dosya, temp);
+	if (!temp.empty()) {
+		formulSayisi = std::stoull(temp);
+		kontrol.Temizle();
+	}
+
+	for (size_t i = 0; i < formulSayisi; i++) {
+
+		Formul* yeniFormul;
+		std::string formulIsmi;
+		std::string formulYazimi;
+		std::string formulAciklama;
+
+
+		std::getline(dosya, formulIsmi);
+		std::getline(dosya, formulYazimi);
+		std::getline(dosya, formulAciklama);
+
+		yeniFormul = new Formul(formulYazimi, formulIsmi, formulAciklama);
+
+		yeniFormul->setFormulIsmi(formulIsmi);
+		yeniFormul->setFormulYazim(formulYazimi);
+		yeniFormul->setFormulAciklama(formulAciklama);
+
+		std::getline(dosya, temp);
+
+		size_t degiskenSayisi = 0;
+		degiskenSayisi = std::stoull(temp);
+
+		for (size_t j = 0; j < degiskenSayisi; j++) {
+
+			std::string degiskenIsmi;
+			std::string degiskenIndis;
+			std::string degiskenSembol;
+			std::string degiskenTanim;
+			std::string degiskenDegerS;
+			std::string degiskenDegerAtandi;
+
+			float degiskenDegerF = 0;
+
+
+			std::getline(dosya, degiskenIsmi);
+			std::getline(dosya, degiskenIndis);
+			std::getline(dosya, degiskenSembol);
+			std::getline(dosya, degiskenTanim);
+			std::getline(dosya, degiskenDegerS);
+			std::getline(dosya, degiskenDegerAtandi);
+
+
+			degiskenDegerF = std::stof(degiskenDegerS);
+
+			yeniFormul->setDegisken(j, degiskenSembol.c_str(), degiskenIndis.c_str(), degiskenTanim.c_str(), degiskenIsmi.c_str(), &degiskenDegerF);
+		}
+
+		kontrol.FormulYeni(yeniFormul);
+
+	}
+
+	dosya.close();
+
+}
+
+void FormulMenu() {
+	//yeni formül - formül sil - formuül düzenle
+	ClearScreenWin();
+	bool FormulMenuKapat = false;
+
+	while (!FormulMenuKapat) {
+
+		std::cout << "Formul Menusu!\n";
+		std::cout << "<1> Yeni Formul <2>Formul Sil <3>Formul Duzenle <0>Menuden Cikis\n";
+
+		switch (GirdiAlInt())
+		{
+			//Yeni Formül oluşturma
+		case 1: {
+			ClearScreenWin();
+			YeniFormulOlusturma();
+			ClearScreenWin();
+			std::cout << "\nFormulunuz basariyla olusturuldu!\n";
+		}break;
+
+			//Formül silme
+		case 2: {
+
+			if (!kontrol.FormulVar()) {
+				std::cout << "\nKayitli formul bulunamadi. Yeni formul olusturmak ister misiniz?\n";
+				std::cout << "<1>Evet\t<2>Hayir";
+				if (GirdiAlInt() == 1) {
+					ClearScreenWin();
+					YeniFormulOlusturma();
+				}
+				break;
+			}
+
+			for (int i = 0; i < kontrol.getFormulSayisi(); i++) {
+				std::cout << "<" << i + 1 << ">" << kontrol.getFormul(i)->getFormulIsmi().c_str();
+			}
+			std::cout << "Islemi iptal etmek icin <0>\n";
+			std::cout << "Silmek istediginiz formulu seciniz: ";
+			int silinecekFormulID = GirdiAlInt();
+			std::cout << std::endl;
+
+			ClearScreenWin();
+			if (silinecekFormulID < kontrol.getFormulSayisi()) {
+				kontrol.FormulSil(silinecekFormulID);
+			}
+			else {
+				std::cout << "Hatali girdi!!!";
+			}
+
+
+		}break;
+
+			//Formül düzenleme
+		case 3: {
+			ClearScreenWin();
+			std::string yazim;
+			std::string aciklama;
+			std::string isim;
+
+			if (!kontrol.FormulVar()) {
+				std::cout << "Kayitli formul bulunamadi!\n";
+				break;
+			}
+			for (int i = 0; i < kontrol.getFormulSayisi(); i++) {
+				std::cout << "<" << i + 1 << ">" << kontrol.getFormul(i)->getFormulIsmi().c_str() << std::endl;
+			}
+			std::cout << "Duzenlemek istediginiz formulu secini: ";
+			int secim = GirdiAlInt();
+			secim--;
+			if (secim < 0 || secim >= kontrol.getFormulSayisi()) {
+				break;
+			}
+
+			std::string eskiYazim = kontrol.getFormul(secim)->getFormulYazim().c_str();
+			std::cout << "Eski formulunuz: ";
+			std::cout << eskiYazim.c_str() << std::endl;
+			std::cout << "Formul: ";
+			yazim = GirdiAlStr();
+			if (yazim.empty()) {
+				yazim = eskiYazim.c_str();
+			}
+
+			std::string eskiIsim = kontrol.getFormul(secim)->getFormulIsmi().c_str();
+			std::cout << "\nEski ismi: ";
+			std::cout << kontrol.getFormul(secim)->getFormulIsmi().c_str() << std::endl;
+			std::cout << "\nYeni Isim: ";
+			isim = GirdiAlStr();
+			if (isim.empty()) {
+				isim = eskiIsim.c_str();
+			}
+
+			std::string eskiAciklama = kontrol.getFormul(secim)->getFormulAciklama().c_str();
+			std::cout << "\nEski aciklama: ";
+			std::cout << kontrol.getFormul(secim)->getFormulAciklama().c_str() << std::endl;
+			std::cout << "\nYeni aciklama: ";
+			aciklama = GirdiAlStr();
+			if (aciklama.empty()) {
+				aciklama = eskiIsim.c_str();
+			}
+
+			kontrol.FormulSil(secim);
+			kontrol.FormulYeni(yazim, isim, aciklama);
+
+			ClearScreenWin();
+			std::cout << "\nDegisiklikler basariyla kaydedildi!\n";
+
+		}break;
+
+
+		case 0: {
+			FormulMenuKapat = true;
+		}break;
+
+		default:
+			break;
+		}
+
+	}
+
+}
+
+void YeniFormulOlusturma() {
+	std::string yazimi;
+	std::string aciklama;
+	std::string isim;
+
+
+	std::cout << "Formulunuzu yaziniz\n";
+	std::cout << "Formul: ";
+	yazimi = GirdiAlStr();
+
+	std::cout << "\nFormulunuze isim verin\n";
+	std::cout << "Isim: ";
+	isim = GirdiAlStr();
+
+	std::cout << "\nFormulunuze aciklama ekleyin\n";
+	std::cout << "Aciklama: ";
+	aciklama = GirdiAlStr();
+
+	kontrol.FormulYeni(yazimi, isim, aciklama);
+
+	std::cout << "\nFormulunuz basariyla olusturuldu!\n";
+}
+
+inline int GirdiAlInt() {
+	std::string girdi;
+
+	int girdi_ = 0;
+	try
+	{
+		std::getline(std::cin, girdi);
+		if (girdi.empty()) {
+			girdi_ = -1;
+		}
+		KomutKontrol(girdi);
+		girdi_ = std::stoi(girdi);
+	}
+	catch (std::invalid_argument& e)
+	{
+		ClearScreenWin();
+		std::cout << "\nLutfen sayi giriniz!\n";
+		girdi_ = -1;
+	}
+	return girdi_;
+}
+
+inline std::string GirdiAlStr() {
+	std::string girdi;
+	try {
+		std::getline(std::cin, girdi);
+		KomutKontrol(girdi);
+		ClearScreenWin();
+	}
+	catch (std::invalid_argument& e) {
+		std::cout << e.what() << std::endl;
+	}
+	return girdi.c_str();
+}
+
+void ClearScreenWin()
+{
+	HANDLE                     hStdOut;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD                      count;
+	DWORD                      cellCount;
+	COORD                      homeCoords = { 0, 0 };
+
+	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hStdOut == INVALID_HANDLE_VALUE) return;
+
+	/* Get the number of cells in the current buffer */
+	if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
+	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
+
+	/* Fill the entire buffer with spaces */
+	if (!FillConsoleOutputCharacter(
+		hStdOut,
+		(TCHAR)' ',
+		cellCount,
+		homeCoords,
+		&count
+	)) return;
+
+	/* Fill the entire buffer with the current colors and attributes */
+	if (!FillConsoleOutputAttribute(
+		hStdOut,
+		csbi.wAttributes,
+		cellCount,
+		homeCoords,
+		&count
+	)) return;
+
+	/* Move the cursor home */
+	SetConsoleCursorPosition(hStdOut, homeCoords);
+}
+
+void KomutKontrol(std::string metin) {
+	if (metin.empty()) {
+		return;
+	}
+	if (metin[0] != '-') {
+		return;
+	}
+	
+	std::string komut = metin.substr(1, metin.find(" ", 0) - 1);
+
+	static std::vector<const char*> KomutListesi = { "calc", "help" };
+
+	int komutID = -1;
+	for (int i = 0; i < KomutListesi.size(); i++) {
+		
+		if (komut == KomutListesi[i]) {
+			komutID = i;
+			break;
+		}
+
+	}
+
+	switch (komutID)
+	{
+		//Hesaplama
+		// -calc = abs(varA - varB)
+	case 0: {
+		std::string islem = metin.substr(metin.find("=") + 1);
+		Formul hesapla(islem);
+		for (size_t i = 0; i < hesapla.getDegiskenSayisi(); i++) {
+			std::cout << "\"" << hesapla.getDegiskenIsim(i).c_str() << "\" icin deger = ";
+
+			std::string degiskenDeger = GirdiAlStr();
+			std::cout << std::endl;
+			if (degiskenDeger.size() != 0) {
+				float degiskenDegerf = std::stof(degiskenDeger);
+				hesapla.setDegiskenDeger(i, degiskenDegerf);
+			}
+		}
+
+		std::cout << "Sonuc= " << hesapla.getSonuc();
+		std::cout << std::endl;
+		std::cout << "Devam etmek icin herhangi bir tusa basiniz...\n";
+		_getch();
+		break;
+	}
+		  //Help
+	case 1: {
+		
+
+		break;
+	}
+
+
+		//Hatalı komut
+	case -1: {
+
+
+		break;
+	}
+
+	default: {
+
+		break;
+	}
+
+	}
+
+}
