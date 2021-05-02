@@ -1,4 +1,5 @@
 ﻿
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -10,9 +11,13 @@
 #include "kontrol.h"
 #include "graph_render.h"
 
+#define DEBUG 1
+
+
 Kontrol kontrol;
 
-const char* DosyaVarsYol = { "D:\\Cpp Projeler\\Formul Hesaplama Uygulaması\\FormulHesaplama.mBin" };
+const char* DosyaVarsYol = { "FormulHesaplama.mBin" };
+const static int PrecisionCount = 9;
 
 //void DeneyKumesiMenu();
 void DeneylerMenu();
@@ -25,28 +30,97 @@ void DosyayaKayit();
 void DosyadanOku(const char* dosyaYolu);
 
 void YeniFormulOlusturma();
-void KomutKontrol(std::string metin);
+int KomutKontrol(std::string metin);
+std::string KomutGerceklestir(std::string metin);
+std::string KomutGerceklestir(std::string metin, int komutID);
 
 inline int GirdiAlInt();
+inline double GirdiAlDouble();
+inline int GirdiAlIntMenu();
 inline std::string GirdiAlStr();
 
 void ClearScreenWin();
 
+template <typename Val>
+bool cmp(Val Fval, Val Sval) { return Fval == Sval; }
+double setPrecision(const double sayiD, int i = PrecisionCount);
+
+bool TestIslem(std::string formul, double beklenenSonuc) {
+	Formul testFormul(formul);
+	std::cout << std::endl << formul.c_str() << "\t Test ediliyor...\n";
+
+	for (int i = 0; i < testFormul.getDegiskenSayisi(); i++) {
+		std::cout << testFormul.getDegiskenIsim(i) << ": ";
+
+		testFormul.setDegiskenDeger(i, GirdiAlDouble());
+		std::cout << std::endl;
+	}
+
+	return cmp(setPrecision(testFormul.getSonuc(), PrecisionCount), beklenenSonuc);
+}
+
+bool TestIslem(std::string formul, double beklenenSonuc, const std::vector<double>& degerler) {
+	Formul testFormul(formul);
+	std::cout << std::endl << formul.c_str() << "\t Test ediliyor...\n";
+
+	for (int i = 0; i < degerler.size(); i++) {
+		std::cout << testFormul.getDegiskenIsim(i) << ": " << degerler[i] << std::endl;
+		testFormul.setDegiskenDeger(i, degerler[i]);
+	}
+
+	return cmp(setPrecision(testFormul.getSonuc(), PrecisionCount), beklenenSonuc);
+}
+
+double setPrecision(const double sayiD,int i) {
+	std::string sayiStr = std::to_string(sayiD).substr(0, i);
+	double number = std::stod(sayiStr);
+	return number;
+}
+
+void sonucYazdir(bool t) {
+	if (t) {
+		std::cout << "DOGRU\n";
+		return;
+	}
+
+	std::cout << "YANLIS\n";
+}
+
 int main()
 {
+	////TestIslem("cos(0) - sin(0)", 1);
+	//bool test = false;
+	//test = TestIslem(" (sin(30) + cos(45)) * tan(15) ", setPrecision(0.39607639433, PrecisionCount));
+	//sonucYazdir(test);
+	//
+	//// DegA = 5; DegB = 10; Sonuc = 4.890080251677091556915458684874
+	//test = TestIslem("DegerA-DegerB^sin(DegerA)", setPrecision(4.890080251677091556915458684874, PrecisionCount), std::vector<double>{5,10}); 
+	//sonucYazdir(test);
+	//
+	//// DegA = 5; DegB = 12; Sonuc = 78125;
+	//test = TestIslem("abs(DegerA^(abs(DegerA-DegerB)) )))", setPrecision(78125), std::vector<double>{5, 12});
+	//sonucYazdir(test);
+	//
+	//test = TestIslem("30 + 48 + (20 * 10 / 5) +20 - 40 +21 + 22 + 23 +23 +18", setPrecision(205));
+	//sonucYazdir(test);
+	//
+	
 
 	//kontrol.FormulYeni("abs(DegerA^(abs(DegerA-DegerB)))");
 	//kontrol.FormulYeni("DegerA-DegerB^sin(DegerA)");
-	//kontrol.FormulYeni("10^(DegerA/DegerB^(cos(30)))");
-	//kontrol.FormulYeni("log(30)*log(2)");
-	
+	//kontrol.FormulYeni("10^(DegerA/DegerB^3))");
+	//kontrol.FormulYeni("(sin(30) + cos (45)) * tan(15)");
+	//kontrol.FormulYeni("10^(DegerA/DegerB^(cos(30))+20 * 10 / 5 +20 - 40 +21 + 22 + 23 +23 +18"); 
+	//kontrol.FormulYeni(" 30 + 48 + (20 * 10 / 5) +20 - 40 +21 + 22 + 23 +23 +18");
+	//std::string islem = { "10^(DegerA/DegerB^(cos(30))+20 + 2 + 2" };
+
 	//RenderOpenGL graph;
 
+	system("Pause");
+
+	while (1) { AnaMenu(); }
 
 
-	while (1) {
-		AnaMenu();
-	}
 	return 0;
 }
 
@@ -68,7 +142,7 @@ void DeneylerMenu() {
 		//Menü işlemleri
 		std::cout << "Deneyler Menu" << std::endl;
 		std::cout << "<1>Yeni Deney Ekle <2>Deney Sil <3>Deney Sec <4>Formul Menusu <0>Deney Menusunden Cik\n";
-		switch (GirdiAlInt())
+		switch (GirdiAlIntMenu())
 		{
 			//1-Yeni deney ekle
 		case 1: {
@@ -77,7 +151,7 @@ void DeneylerMenu() {
 				std::cout << "Yeni deney olusturuldu!\n";
 			}
 			else {
-				std::cout << "BEKLENMEDIK HATA!!!\n";
+				std::cerr << "BEKLENMEDIK HATA!!!\n";
 			}
 		}break;
 
@@ -116,7 +190,7 @@ void DeneylerMenu() {
 					std::cout << "'" << deney->DeneyAdi.c_str() << "\t" << deneyKulForm.c_str() << "' Basariyla silinmistir!\n";
 				}
 				else {
-					std::cout << "BEKLENMEDIK HATA!!!\n";
+					std::cerr << "BEKLENMEDIK HATA!!!\n";
 				}
 			}
 			else {
@@ -180,6 +254,10 @@ void DeneylerMenu() {
 			FormulMenu();
 		}break;
 
+			//-2 -Komut girildi
+		case -2: {
+		}break;
+
 			//0-Deney menüsünden çık
 		case 0: {
 			ClearScreenWin();
@@ -189,7 +267,8 @@ void DeneylerMenu() {
 		}break;
 
 		default:
-			std::cout << "Hatali girdi!\n";
+			ClearScreenWin();
+			std::cerr << "Hatali girdi!\n";
 			break;
 		}
 
@@ -209,7 +288,7 @@ void DeneyMenu(int deneyID) {
 		Deney* deney = kontrol[deneyID];
 		std::cout << "'" << deney->DeneyAdi.c_str() << "' isimli deneyin menusu\n";
 		std::cout << "<1> Degisken duzenleme <2>Formul secme <3>Deney ismi duzenleme <4>Deney Sonucu <0>Menuden cikis\n";
-		switch (GirdiAlInt())
+		switch (GirdiAlIntMenu())
 		{
 			//Degisken duzenleme
 		case 1: {
@@ -223,14 +302,14 @@ void DeneyMenu(int deneyID) {
 			//Değişken için yeni değer al
 			for (int i = 0; i < degiskenSayisi; i++) {
 				std::string sembol = deney->getDegiskenIsim(i);
-				float degerEski = deney->getDegiskenDeger(i);
+				double degerEski = deney->getDegiskenDeger(i);
 				std::cout << "Eski (" << sembol << ")" << "Degisken: " << degerEski << std::endl;
 				std::cout << "Yeni (" << sembol << ")" << "Degisken: ";
 				std::string degerYeni = GirdiAlStr();
 				std::cout << std::endl;
 				if (degerYeni.size() != 0) {
-					float degerYenif = std::stof(degerYeni);
-					deney->setDegiskenDeger(i, degerYenif);
+					double degerYenid = std::stod(degerYeni);
+					deney->setDegiskenDeger(i, degerYenid);
 				}
 			}
 
@@ -287,7 +366,12 @@ void DeneyMenu(int deneyID) {
 			std::cout << std::endl;
 		}break;
 
-			//Menuden cikis
+			//-2 -Komut girildi
+		case -2: {
+			break;
+		}
+
+			   //Menuden cikis
 		case 0: {
 			DeneyMenuKapat = true;
 		}break;
@@ -304,8 +388,8 @@ void DeneyMenu(int deneyID) {
 
 void AyarlarMenu() {
 	std::cout << "<1> Formul ve Deneyi kaydet <2> Kayitli dosyadan Formul ve Deneyleri al (!Mevcut deney ve formuller SILINIR!) <3> Ayarlar Menusunden Cik \n";
-	
-	switch (GirdiAlInt()) {
+
+	switch (GirdiAlIntMenu()) {
 
 	case 1: {
 
@@ -318,12 +402,16 @@ void AyarlarMenu() {
 		break;
 	}
 
-	case 0: {
+	case 3: {
 
 		break;
 	}
 
-	
+		  //-2 -Komut girildi
+	case -2: {
+		break;
+	}
+
 	default: {
 
 		std::cout << "\nHatali girdi";
@@ -369,6 +457,12 @@ void DosyayaKayit() {
 
 	size_t bufferSize = 1024 * 100;
 	std::string buffer;
+
+	//Deney veya formul yoksa çık
+	if (!(kontrol.getDeneySayisi() || kontrol.getFormulSayisi())) {
+		std::cerr << "Dosyaya yazilacak deney veya formul bulunamadi!" << std::endl;
+		return;
+	}
 
 	buffer += std::to_string(kontrol.getDeneySayisi());
 	buffer += "\n";
@@ -426,7 +520,8 @@ void DosyadanOku(const char* dosyaYolu) {
 	dosya.open(dosyaYolu);
 
 	if (!dosya.is_open()) {
-		std::cout << "\nDosya okunamadi" << std::endl;
+		std::cerr << "\nDosya okunamadi\nDevam etmek icin herhangi bir tusa basin..." << std::endl;
+		ClearScreenWin();
 		return;
 	}
 
@@ -440,7 +535,7 @@ void DosyadanOku(const char* dosyaYolu) {
 	}
 
 	for (size_t i = 0; i < deneySayisi; i++) {
-		
+
 		Deney* yeniDeney;
 		std::string deneyAdi;
 		std::string formulIsmi;
@@ -473,7 +568,7 @@ void DosyadanOku(const char* dosyaYolu) {
 			std::string degiskenDegerS;
 			std::string degiskenDegerAtandi;
 
-			float degiskenDegerF = 0; 
+			double degiskenDegerD = 0;
 
 
 			std::getline(dosya, degiskenIsmi);
@@ -484,9 +579,9 @@ void DosyadanOku(const char* dosyaYolu) {
 			std::getline(dosya, degiskenDegerAtandi);
 
 
-			degiskenDegerF = std::stof(degiskenDegerS);
+			degiskenDegerD = std::stod(degiskenDegerS);
 
-			yeniDeney->setDegisken(j, degiskenSembol.c_str(), degiskenIndis.c_str(), degiskenTanim.c_str(), degiskenIsmi.c_str(), &degiskenDegerF);
+			yeniDeney->setDegisken(j, degiskenSembol.c_str(), degiskenIndis.c_str(), degiskenTanim.c_str(), degiskenIsmi.c_str(), &degiskenDegerD);
 		}
 
 		kontrol.DeneyYeni(yeniDeney);
@@ -534,7 +629,7 @@ void DosyadanOku(const char* dosyaYolu) {
 			std::string degiskenDegerS;
 			std::string degiskenDegerAtandi;
 
-			float degiskenDegerF = 0;
+			double degiskenDegerD = 0;
 
 
 			std::getline(dosya, degiskenIsmi);
@@ -545,9 +640,9 @@ void DosyadanOku(const char* dosyaYolu) {
 			std::getline(dosya, degiskenDegerAtandi);
 
 
-			degiskenDegerF = std::stof(degiskenDegerS);
+			degiskenDegerD = std::stod(degiskenDegerS);
 
-			yeniFormul->setDegisken(j, degiskenSembol.c_str(), degiskenIndis.c_str(), degiskenTanim.c_str(), degiskenIsmi.c_str(), &degiskenDegerF);
+			yeniFormul->setDegisken(j, degiskenSembol.c_str(), degiskenIndis.c_str(), degiskenTanim.c_str(), degiskenIsmi.c_str(), &degiskenDegerD);
 		}
 
 		kontrol.FormulYeni(yeniFormul);
@@ -568,7 +663,7 @@ void FormulMenu() {
 		std::cout << "Formul Menusu!\n";
 		std::cout << "<1> Yeni Formul <2>Formul Sil <3>Formul Duzenle <0>Menuden Cikis\n";
 
-		switch (GirdiAlInt())
+		switch (GirdiAlIntMenu())
 		{
 			//Yeni Formül oluşturma
 		case 1: {
@@ -709,26 +804,263 @@ inline int GirdiAlInt() {
 	try
 	{
 		std::getline(std::cin, girdi);
+
 		if (girdi.empty()) {
-			girdi_ = -1;
+			return -1;
 		}
-		KomutKontrol(girdi);
+
 		girdi_ = std::stoi(girdi);
 	}
-	catch (std::invalid_argument& e)
+	catch (const std::invalid_argument& e)
 	{
+#ifdef DEBUG
+		std::cout << e.what() << std::endl;
+#endif // !DEBUG
+
+
 		ClearScreenWin();
 		std::cout << "\nLutfen sayi giriniz!\n";
 		girdi_ = -1;
 	}
+	catch (const std::out_of_range& e) {
+#ifdef DEBUG
+		std::cerr << e.what() << std::endl;
+#endif
+		ClearScreenWin();
+		std::cerr << "\nGirilen ifade fazla buyuk\n";
+		girdi_ = -1;
+	}
+
 	return girdi_;
+}
+
+inline double GirdiAlDouble() {
+	std::string girdi;
+
+	double girdi_ = 0;
+	try
+	{
+		std::getline(std::cin, girdi);
+
+		if (girdi.empty()) {
+			return -1;
+		}
+
+		girdi_ = std::stod(girdi);
+	}
+	catch (const std::invalid_argument& e)
+	{
+#ifdef DEBUG
+		std::cout << e.what() << std::endl;
+#endif // !DEBUG
+
+
+		ClearScreenWin();
+		std::cout << "\nLutfen sayi giriniz!\n";
+		girdi_ = -1;
+	}
+	catch (const std::out_of_range& e) {
+#ifdef DEBUG
+		std::cerr << e.what() << std::endl;
+#endif
+		ClearScreenWin();
+		std::cerr << "\nGirilen ifade fazla buyuk\n";
+		girdi_ = -1;
+	}
+
+	return girdi_;
+}
+
+inline int GirdiAlIntMenu() {
+	std::string girdi;
+
+	int girdi_ = 0;
+	try
+	{
+		std::getline(std::cin, girdi);
+
+		//Girdi boş ise
+		if (girdi.empty()) {
+			return -1;
+		}
+
+		//Komut girildi ise
+		if (KomutKontrol(girdi)) {
+			std::string sonuc = KomutGerceklestir(girdi);
+			std::cout << std::endl << sonuc;
+			return -2;
+		}
+
+		girdi_ = std::stoi(girdi);
+	}
+	catch (const std::invalid_argument& e)
+	{
+#ifdef DEBUG
+		std::cout << e.what() << std::endl;
+#endif // !DEBUG
+
+		ClearScreenWin();
+		std::cout << "\nLutfen sayi giriniz!\n";
+		girdi_ = -1;
+	}
+	catch (const std::out_of_range& e) {
+#ifdef DEBUG
+		std::cerr << e.what() << std::endl;
+#endif
+		ClearScreenWin();
+		std::cerr << "\nGirilen ifade fazla buyuk\n";
+		girdi_ = -1;
+	}
+
+	return girdi_;
+}
+
+int KomutKontrol(std::string metin) {
+	if (metin.empty()) {
+		return 0;
+	}
+	if (metin[0] != '-') {
+		return 0;
+	}
+
+	std::string komut = metin.substr(1, metin.find(" ", 0) - 1);
+
+	static std::vector<const char*> KomutListesi = { "calc", "help", "cls" };
+
+	int komutID = -1;
+	for (int i = 0; i < KomutListesi.size(); i++) {
+
+		if (komut == KomutListesi[i]) {
+			komutID = i;
+			break;
+		}
+
+	}
+	return komutID;
+}
+
+std::string KomutGerceklestir(std::string metin) {
+	std::string komut = metin.substr(1, metin.find(" ", 0) - 1);
+
+	static std::vector<const char*> KomutListesi = { "calc", "help", "cls" };
+
+	int komutID = -1;
+	for (int i = 0; i < KomutListesi.size(); i++) {
+
+		if (komut == KomutListesi[i]) {
+			komutID = i;
+			break;
+		}
+
+	}
+
+	switch (komutID)
+	{
+		//Hesaplama
+		// -calc = <formula>
+	case 0: {
+		std::string islem = metin.substr(metin.find("=") + 1);
+		Formul hesapla(islem);
+		for (size_t i = 0; i < hesapla.getDegiskenSayisi(); i++) {
+			std::cout << "\"" << hesapla.getDegiskenIsim(i).c_str() << "\" icin deger = ";
+
+			std::string degiskenDeger = GirdiAlStr();
+			std::cout << std::endl;
+			if (degiskenDeger.size() != 0) {
+				double degiskenDegerd = std::stod(degiskenDeger);
+				hesapla.setDegiskenDeger(i, degiskenDegerd);
+			}
+		}
+
+		return std::to_string(hesapla.getSonuc());
+		break;
+	}
+
+		  //help
+	case 1: {
+		return std::string("Komut bolumu yardim kismi");
+		break;
+	}
+
+		  //cls
+	case 2: {
+		ClearScreenWin();
+		return "0";
+		break;
+	}
+
+		  //Hatalı komut
+	case -1: {
+		return std::string("Hatali komut girildi. Komutlar icin -help yaziniz.");
+		break;
+	}
+
+	default: {
+
+		break;
+	}
+
+	}
+	return "1";
+}
+
+std::string KomutGerceklestir(std::string metin, int komutID) {
+	std::string komut = metin.substr(1, metin.find(" ", 0) - 1);
+
+	switch (komutID)
+	{
+		//Hesaplama
+		// -calc = <formula>
+	case 0: {
+		std::string islem = metin.substr(metin.find("=") + 1);
+		Formul hesapla(islem);
+		for (size_t i = 0; i < hesapla.getDegiskenSayisi(); i++) {
+			std::cout << "\"" << hesapla.getDegiskenIsim(i).c_str() << "\" icin deger = ";
+
+			std::string degiskenDeger = GirdiAlStr();
+			std::cout << std::endl;
+			if (degiskenDeger.size() != 0) {
+				double degiskenDegerd = std::stod(degiskenDeger);
+				hesapla.setDegiskenDeger(i, degiskenDegerd);
+			}
+		}
+
+		return std::to_string(hesapla.getSonuc());
+		break;
+	}
+
+		  //help
+	case 1: {
+		return std::string("Komut bolumu yardim kismi");
+		break;
+	}
+
+		  //cls
+	case 2: {
+		ClearScreenWin();
+		return std::string();
+		break;
+	}
+
+		  //Hatalı komut
+	case -1: {
+		return std::string("Hatali komut girildi. Komutlar icin -help yaziniz.");
+		break;
+	}
+
+	default: {
+
+		break;
+	}
+
+	}
+	return std::string();
 }
 
 inline std::string GirdiAlStr() {
 	std::string girdi;
 	try {
 		std::getline(std::cin, girdi);
-		KomutKontrol(girdi);
 		ClearScreenWin();
 	}
 	catch (std::invalid_argument& e) {
@@ -772,74 +1104,4 @@ void ClearScreenWin()
 
 	/* Move the cursor home */
 	SetConsoleCursorPosition(hStdOut, homeCoords);
-}
-
-void KomutKontrol(std::string metin) {
-	if (metin.empty()) {
-		return;
-	}
-	if (metin[0] != '-') {
-		return;
-	}
-	
-	std::string komut = metin.substr(1, metin.find(" ", 0) - 1);
-
-	static std::vector<const char*> KomutListesi = { "calc", "help" };
-
-	int komutID = -1;
-	for (int i = 0; i < KomutListesi.size(); i++) {
-		
-		if (komut == KomutListesi[i]) {
-			komutID = i;
-			break;
-		}
-
-	}
-
-	switch (komutID)
-	{
-		//Hesaplama
-		// -calc = abs(varA - varB)
-	case 0: {
-		std::string islem = metin.substr(metin.find("=") + 1);
-		Formul hesapla(islem);
-		for (size_t i = 0; i < hesapla.getDegiskenSayisi(); i++) {
-			std::cout << "\"" << hesapla.getDegiskenIsim(i).c_str() << "\" icin deger = ";
-
-			std::string degiskenDeger = GirdiAlStr();
-			std::cout << std::endl;
-			if (degiskenDeger.size() != 0) {
-				float degiskenDegerf = std::stof(degiskenDeger);
-				hesapla.setDegiskenDeger(i, degiskenDegerf);
-			}
-		}
-
-		std::cout << "Sonuc= " << hesapla.getSonuc();
-		std::cout << std::endl;
-		std::cout << "Devam etmek icin herhangi bir tusa basiniz...\n";
-		_getch();
-		break;
-	}
-		  //Help
-	case 1: {
-		
-
-		break;
-	}
-
-
-		//Hatalı komut
-	case -1: {
-
-
-		break;
-	}
-
-	default: {
-
-		break;
-	}
-
-	}
-
 }

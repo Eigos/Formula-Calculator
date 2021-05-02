@@ -15,13 +15,13 @@ enum class Status {
 struct Deney : public Formul
 {
 	std::string DeneyAdi;
-
+	
 	Deney(const int& id) {
 		DeneyAdi = { "Deney- " + std::to_string(id) };
+
 	}
 
 	Deney(const size_t& id) {
-		
 		DeneyAdi = { "Deney- " + std::to_string(id) };
 	}
 
@@ -63,7 +63,7 @@ public:
 	size_t getDeneySayisi();
 	Deney* operator[](int& id);
 	const Deney* getDeney(int id);
-
+	
 	Status FormulYeni(std::string formul = "", std::string isim = {"FormulNo-" + std::to_string(formulListesi.size())}, std::string aciklama = "Yeni Formul");
 	Status FormulYeni(Formul* formul);
 	Status FormulSil(int& formulID);

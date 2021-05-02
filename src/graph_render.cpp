@@ -76,7 +76,7 @@ void RenderOpenGL::MainLoop() {
 	shape.Cube();
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-	//glPointSize(10.f);
+	//glPointSize(5.f);
 
 	
 	while (!glfwWindowShouldClose(window))

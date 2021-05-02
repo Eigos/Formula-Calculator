@@ -95,7 +95,7 @@ void Shape::Sphere() {
     elements.push_back(0);
     elements.push_back(1);
 
-    //verticieCount = elements.size();
+    verticieCount = elements.size();
 
     glBindVertexArray(VAO);
 
@@ -115,7 +115,7 @@ void Shape::Draw()
 {
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, verticieCount);
-   // glDrawElements(GL_TRIANGLES, verticieCount, GL_UNSIGNED_INT, (void*)0);
+    //glDrawElements(GL_POINTS, verticieCount, GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
 }
 

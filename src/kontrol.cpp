@@ -128,10 +128,11 @@ bool Kontrol::FormulVar()
 
 size_t Kontrol::getFormulSayisi()
 {
-	if (FormulVar()) {
+	if (!FormulVar()) {
 		return formulListesi.size();
 	}
-	return static_cast<size_t>(-1);
+
+	return formulListesi.size();
 }
 
 const Formul* Kontrol::getFormul(const int& formulID){
