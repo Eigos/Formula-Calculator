@@ -3,13 +3,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <windows.h>
+//#include <windows.h>
+#include <stdlib.h>
 #include <conio.h>
 #include <fstream>
+#include "raylib/raylib-cpp.hpp"
 
 #include "formul.h"
 #include "kontrol.h"
-#include "graph_render.h"
 
 #define DEBUG 1
 
@@ -71,7 +72,7 @@ bool TestIslem(std::string formul, double beklenenSonuc, const std::vector<doubl
 	return cmp(setPrecision(testFormul.getSonuc(), PrecisionCount), beklenenSonuc);
 }
 
-double setPrecision(const double sayiD,int i) {
+double setPrecision(const double sayiD, int i) {
 	std::string sayiStr = std::to_string(sayiD).substr(0, i);
 	double number = std::stod(sayiStr);
 	return number;
@@ -89,22 +90,29 @@ void sonucYazdir(bool t) {
 int main()
 {
 	////TestIslem("cos(0) - sin(0)", 1);
-	//bool test = false;
+	
+	bool test = false;
+	
 	//test = TestIslem(" (sin(30) + cos(45)) * tan(15) ", setPrecision(0.39607639433, PrecisionCount));
 	//sonucYazdir(test);
+
 	//
 	//// DegA = 5; DegB = 10; Sonuc = 4.890080251677091556915458684874
 	//test = TestIslem("DegerA-DegerB^sin(DegerA)", setPrecision(4.890080251677091556915458684874, PrecisionCount), std::vector<double>{5,10}); 
 	//sonucYazdir(test);
 	//
-	//// DegA = 5; DegB = 12; Sonuc = 78125;
-	//test = TestIslem("abs(DegerA^(abs(DegerA-DegerB)) )))", setPrecision(78125), std::vector<double>{5, 12});
+	int DegA = 10, DegB = 3, Sonuc = 1;
+	
+	test = TestIslem("(DegA)mod(DegB)", Sonuc, {static_cast<double>(DegA), static_cast<double>(DegB)});
+	sonucYazdir(test);
+
+	//test = TestIslem("abs(DegerA^(abs(DegerA-DegerB)) )))", setPrecision(78125), {5, 12});
 	//sonucYazdir(test);
 	//
 	//test = TestIslem("30 + 48 + (20 * 10 / 5) +20 - 40 +21 + 22 + 23 +23 +18", setPrecision(205));
 	//sonucYazdir(test);
 	//
-	
+
 
 	//kontrol.FormulYeni("abs(DegerA^(abs(DegerA-DegerB)))");
 	//kontrol.FormulYeni("DegerA-DegerB^sin(DegerA)");
@@ -118,11 +126,19 @@ int main()
 
 	system("Pause");
 
-	while (1) { AnaMenu(); }
+	bool UI = true;
+	while (1) {
+		if (UI) {
+			AnaMenu();
+		}
+		KomutGerceklestir(GirdiAlStr());
+	}
 
 
 	return 0;
 }
+
+
 
 
 void AnaMenu() {
@@ -1071,6 +1087,8 @@ inline std::string GirdiAlStr() {
 
 void ClearScreenWin()
 {
+	system("CLS");
+/*
 	HANDLE                     hStdOut;
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	DWORD                      count;
@@ -1080,11 +1098,11 @@ void ClearScreenWin()
 	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (hStdOut == INVALID_HANDLE_VALUE) return;
 
-	/* Get the number of cells in the current buffer */
+	// Get the number of cells in the current buffer
 	if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
 	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
 
-	/* Fill the entire buffer with spaces */
+	// Fill the entire buffer with spaces
 	if (!FillConsoleOutputCharacter(
 		hStdOut,
 		(TCHAR)' ',
@@ -1093,7 +1111,7 @@ void ClearScreenWin()
 		&count
 	)) return;
 
-	/* Fill the entire buffer with the current colors and attributes */
+	// Fill the entire buffer with the current colors and attributes 
 	if (!FillConsoleOutputAttribute(
 		hStdOut,
 		csbi.wAttributes,
@@ -1102,6 +1120,7 @@ void ClearScreenWin()
 		&count
 	)) return;
 
-	/* Move the cursor home */
+	// Move the cursor home 
 	SetConsoleCursorPosition(hStdOut, homeCoords);
+	*/
 }

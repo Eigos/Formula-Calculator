@@ -30,16 +30,15 @@ Formul::~Formul() {
 	}
 }
 
-// test deneme formülü:  (-x*Y^(12*x+y)/z) / _(l^2+12) )
 void Formul::FormulCozumle()
 {
 	std::string yazimGecici = FormulYazimi;
 	yazimGecici.insert(0, "(");
 	yazimGecici.push_back(')');
 
-	std::vector<char> ozelKarakterler = { '(', ')', '^', '+', '-', '*', '/' };
+	std::vector<char> ozelKarakterler = { '(', ')', '^', '+', '-', '*', '/', '!'};
 	std::vector<std::string> ozelIslemler = { "abs", "sin", "cos", "tan", "cot", "sec", "csc", "log", "ln", "!", "mod" };
-
+	
 
 
 	//Boşlukları ve kabul edilmeyen karakterleri temizle
@@ -125,6 +124,16 @@ void Formul::FormulCozumle()
 					i += degiskenIsim.size() - 1;
 					break;
 				}
+
+			}
+			for (int k = 0; k < islemTuruCiftSayisi; k++) {
+
+				if (degiskenIsim == islemTuruCift[k]) {
+					ozelIfade = true;
+					i += degiskenIsim.size() - 1;
+					break;
+				}
+
 			}
 			if (ozelIfade) { continue; }
 			//Kayıtlı değişkenlerle karşılaştır
@@ -244,7 +253,7 @@ void Formul::FormulCozumle()
 			long long int posBaslangicGecici = posBaslangic;
 			long long int posSonGecici = yazimGecici.find(")", posBaslangicGecici);
 
-			//Doğru parantezi bulmak için döngü
+			//Doğru parantezi bulmak için gerekli döngü
 			while (true) {
 				posBaslangicGecici = yazimGecici.find("(", posBaslangicGecici + 1);
 				if (( (posSonGecici) - (posBaslangicGecici) ) < 0) {
@@ -376,7 +385,8 @@ void Formul::IslemAraDegistirCift(std::string aranacakIslem, size_t& posBas, siz
 
 			islem->islemStr = metin.substr(posIslem - degerUzunluk, (degerUzunluk * 2) + aranacakIslem.size());
 			islem->degerIlk = islem->islemStr.substr(0, degerUzunluk);
-			islem->degerIki = islem->islemStr.substr(degerUzunluk + 1, islem->islemStr.size() - degerUzunluk - 1);
+			islem->degerIki = islem->islemStr.substr(degerUzunluk + aranacakIslem.size(),
+				islem->islemStr.size() - degerUzunluk - 1);
 
 			std::string islemID = "I";
 
@@ -496,7 +506,6 @@ const double Formul::IslemleriHesapla() {
 
 			//değer indisi
 			std::string idStr = degerStr[j].substr(1, haneSayisi);
-			//int id = std::stoi(idStr); //kimlikten numaraya
 			int id = KimliktenDeger(idStr);
 			switch (karakter)
 			{
@@ -592,9 +601,14 @@ const double Formul::IslemleriHesapla() {
 					sonuc = 0;
 					break;
 				}
-				while (n > 0) {
+				else if(n == 1) {
+					sonuc = 1;
+					break;
+				}
+				while (--n > 0) {
+					
 					sonuc = sonuc * n;
-					n--;
+					
 				}
 				break;
 			}
@@ -717,7 +731,7 @@ Formul::Degisken::Degisken() {
 
 }
 
-void Formul::Degisken::setDeger(const double deger_)
+void Formul::Degisken::setDeger(const double& deger_)
 {
 	deger = deger_; degerGirildi = true;
 }

@@ -8,9 +8,6 @@
     <Filter Include="include">
       <UniqueIdentifier>{35fc85a2-3dae-43a5-95c1-7a40a7c8cc62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\glfw">
-      <UniqueIdentifier>{4a5ed24c-cb63-4813-b780-eb8291b7b31b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shaders">
       <UniqueIdentifier>{1d4b8dfd-aa06-4fd6-ab7e-35604d7a8fbb}</UniqueIdentifier>
     </Filter>
@@ -20,9 +17,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\formul.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graph_render.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\glad.c">
@@ -39,28 +33,16 @@
     <ClInclude Include="include\formul.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\GLFW\glfw3.h">
-      <Filter>include\glfw</Filter>
-    </ClInclude>
-    <ClInclude Include="include\GLFW\glfw3native.h">
-      <Filter>include\glfw</Filter>
-    </ClInclude>
-    <ClInclude Include="include\graph_render.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\glad.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\shape.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\camera.h">
+    <ClInclude Include="include\kontrol.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\kontrol.h">
+    <ClInclude Include="include\shader.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

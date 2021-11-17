@@ -31,13 +31,22 @@ enum class IslemTipi : int {
 //Tek ve çift değişkene veya sabite bağımlı olan islemler
 static const int islemTuruCiftSayisi = 6;
 static const int islemTuruTekSayisi = 11;
-static const char* islemTuruCift[] = { "^", "*", "/", "mod", "-", "+" };
-static const char* islemTuruTek[] = { "abs", "sin", "cos", "tan", "cot", "sec", "csc", "log", "ln", "!", "-" };
+
+
+//value operator value
+static const std::vector<const char*> islemTuruCift { "^", "*", "/", "mod", "-", "+" };
+
+//Do not forget to put parentheses to value
+//operator(value)
+static const std::vector<const char*> islemTuruTek { "abs", "sin", "cos", "tan", "cot", "sec", "csc", "log", "ln", "!", "-" };
+
 
 //	 						      --0123456789-0123456789-0123456789-0123456789-0123456789-0123456--
 static const char* alfabeListesi = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static const int alfaListesiUzunluk = 62;
+
 class Formul {
+
 private:
 	struct Islem;
 	struct Degisken;
@@ -55,9 +64,8 @@ private:
 
 private:
 	int haneSayisi = 5;
-	int degerUzunluk = haneSayisi + 1; //d1-> 2  :  d12->3  :  d122->4
+	int degerUzunluk = haneSayisi + 1; //d1-> 2chars :  d12-> 3char  :  d122-> 4chars
 
-	//std::vector<std::string > islemTuru = { "+", "-", "*", "/", "^", "abs", "sin", "cos", "tan", "cot", "sec", "csc", "log", "ln", "!", "mod" };
 	void IslemAraDegistirCift(std::string aranacakIslem, size_t& posBas, size_t& posSon, std::string& metin);
 	void IslemAraDegistirTek(std::string aranacakIslem, size_t& posBas, size_t& posSon, std::string& metin);
 	void IslemUzunlukGuncelle();
@@ -68,7 +76,7 @@ private:
 	const double IslemleriHesapla();
 	IslemTipi StringdenIslemTipi(std::string tip);
 
-	//Serches the given value inbetween ValueBegPoint and ValueEndPoint
+	//Searches the given value inbetween ValueBegPoint and ValueEndPoint
 	template<typename StoredValTypePtr, typename SearchValue>
 	static size_t search(StoredValTypePtr* ValueBegPoint, StoredValTypePtr* ValueEndPoint, SearchValue value) {
 		size_t count = 0;
@@ -100,7 +108,7 @@ private:
 		std::string Tanim = { "Tanismiz" };
 		std::string Isim = { "Degisken" };
 		bool Sabit = false;
-		void setDeger(const double deger_);
+		void setDeger(const double& deger_);
 		double getDeger();
 		bool DegerGirildi();
 

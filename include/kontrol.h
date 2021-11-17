@@ -46,7 +46,7 @@ private:
 	static std::vector<Formul*> formulListesi;
 	
 	template<typename ListType, typename NumberType>
-	inline bool ListedeBulunuyor(NumberType& id, std::vector<ListType*>& liste);
+	inline bool ListedeBulunuyor(const NumberType& id,const std::vector<ListType*>& liste);
 
 private:
 	Deney* DeneyYeni(const char*);
@@ -76,7 +76,7 @@ public:
 };
 
 template<typename ListType, typename NumberType>
-inline bool Kontrol::ListedeBulunuyor(NumberType& id, std::vector<ListType*>& liste)
+inline bool Kontrol::ListedeBulunuyor(const NumberType& id, const std::vector<ListType*>& liste)
 {
 	if (!liste.empty()) {
 		if (id < liste.size()) {
