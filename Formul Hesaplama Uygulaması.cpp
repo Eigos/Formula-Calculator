@@ -87,53 +87,27 @@ void sonucYazdir(bool t) {
 	std::cout << "YANLIS\n";
 }
 
-int main()
+int main(int argCount, char* argv[])
 {
-	////TestIslem("cos(0) - sin(0)", 1);
+	bool onlyCalculation = false;
+
+	if (argCount > 1) {
+		for (int i = 1; i < argCount; i++) {
+			if (KomutKontrol(argv[1]) != -1) {
+				std::cout <<  KomutGerceklestir(argv[1]).c_str() << std::endl;
+				onlyCalculation = true;
+			}
+		}
+	}
+
 	
-	bool test = false;
-	
-	//test = TestIslem(" (sin(30) + cos(45)) * tan(15) ", setPrecision(0.39607639433, PrecisionCount));
-	//sonucYazdir(test);
-
-	//
-	//// DegA = 5; DegB = 10; Sonuc = 4.890080251677091556915458684874
-	//test = TestIslem("DegerA-DegerB^sin(DegerA)", setPrecision(4.890080251677091556915458684874, PrecisionCount), std::vector<double>{5,10}); 
-	//sonucYazdir(test);
-	//
-	int DegA = 10, DegB = 3, Sonuc = 1;
-	
-	test = TestIslem("(DegA)mod(DegB)", Sonuc, {static_cast<double>(DegA), static_cast<double>(DegB)});
-	sonucYazdir(test);
-
-	//test = TestIslem("abs(DegerA^(abs(DegerA-DegerB)) )))", setPrecision(78125), {5, 12});
-	//sonucYazdir(test);
-	//
-	//test = TestIslem("30 + 48 + (20 * 10 / 5) +20 - 40 +21 + 22 + 23 +23 +18", setPrecision(205));
-	//sonucYazdir(test);
-	//
-
-
-	//kontrol.FormulYeni("abs(DegerA^(abs(DegerA-DegerB)))");
-	//kontrol.FormulYeni("DegerA-DegerB^sin(DegerA)");
-	//kontrol.FormulYeni("10^(DegerA/DegerB^3))");
-	//kontrol.FormulYeni("(sin(30) + cos (45)) * tan(15)");
-	//kontrol.FormulYeni("10^(DegerA/DegerB^(cos(30))+20 * 10 / 5 +20 - 40 +21 + 22 + 23 +23 +18"); 
-	//kontrol.FormulYeni(" 30 + 48 + (20 * 10 / 5) +20 - 40 +21 + 22 + 23 +23 +18");
-	//std::string islem = { "10^(DegerA/DegerB^(cos(30))+20 + 2 + 2" };
-
-	//RenderOpenGL graph;
-
-	system("Pause");
-
 	bool UI = true;
-	while (1) {
+	while (!onlyCalculation) {
 		if (UI) {
 			AnaMenu();
 		}
 		KomutGerceklestir(GirdiAlStr());
 	}
-
 
 	return 0;
 }
@@ -1047,7 +1021,7 @@ std::string KomutGerceklestir(std::string metin, int komutID) {
 
 		  //help
 	case 1: {
-		return std::string("Komut bolumu yardim kismi");
+		return std::string("Komut bolumu yardim kismi\nHesaplama yapmak icin ''-calc = <islem>'' ifade tirnak icine alinmali");
 		break;
 	}
 
@@ -1088,39 +1062,39 @@ inline std::string GirdiAlStr() {
 void ClearScreenWin()
 {
 	system("CLS");
-/*
-	HANDLE                     hStdOut;
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD                      count;
-	DWORD                      cellCount;
-	COORD                      homeCoords = { 0, 0 };
+	/*
+		HANDLE                     hStdOut;
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		DWORD                      count;
+		DWORD                      cellCount;
+		COORD                      homeCoords = { 0, 0 };
 
-	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (hStdOut == INVALID_HANDLE_VALUE) return;
+		hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		if (hStdOut == INVALID_HANDLE_VALUE) return;
 
-	// Get the number of cells in the current buffer
-	if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
-	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
+		// Get the number of cells in the current buffer
+		if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
+		cellCount = csbi.dwSize.X * csbi.dwSize.Y;
 
-	// Fill the entire buffer with spaces
-	if (!FillConsoleOutputCharacter(
-		hStdOut,
-		(TCHAR)' ',
-		cellCount,
-		homeCoords,
-		&count
-	)) return;
+		// Fill the entire buffer with spaces
+		if (!FillConsoleOutputCharacter(
+			hStdOut,
+			(TCHAR)' ',
+			cellCount,
+			homeCoords,
+			&count
+		)) return;
 
-	// Fill the entire buffer with the current colors and attributes 
-	if (!FillConsoleOutputAttribute(
-		hStdOut,
-		csbi.wAttributes,
-		cellCount,
-		homeCoords,
-		&count
-	)) return;
+		// Fill the entire buffer with the current colors and attributes
+		if (!FillConsoleOutputAttribute(
+			hStdOut,
+			csbi.wAttributes,
+			cellCount,
+			homeCoords,
+			&count
+		)) return;
 
-	// Move the cursor home 
-	SetConsoleCursorPosition(hStdOut, homeCoords);
-	*/
+		// Move the cursor home
+		SetConsoleCursorPosition(hStdOut, homeCoords);
+		*/
 }
