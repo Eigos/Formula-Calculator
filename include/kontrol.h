@@ -45,8 +45,8 @@ private:
 	std::vector<Deney*> deneyListesi;
 	static std::vector<Formul*> formulListesi;
 	
-	template<typename ListType, typename NumberType>
-	inline bool ListedeBulunuyor(const NumberType& id,const std::vector<ListType*>& liste);
+	template<typename ListType>
+	inline bool ListedeBulunuyor(const size_t& id,const std::vector<ListType*>& liste);
 
 private:
 	Deney* DeneyYeni(const char*);
@@ -56,8 +56,8 @@ public:
 	Kontrol();
 	const int DeneyYeni();
 	const int DeneyYeni(Deney* deney);
-	Status DeneySil(int& deneyID);
-	const char* getDeneyAdi(int& deneyID);
+	Status DeneySil(uint32_t& deneyID);
+	const char* getDeneyAdi(uint32_t& deneyID);
 	Status DeneyDuzenle(int deneyID, std::string yeniDeneyAdi);
 	Status DeneyFormulKullan(const size_t& formulID, Deney* deney);
 	size_t getDeneySayisi();
@@ -75,8 +75,8 @@ public:
 
 };
 
-template<typename ListType, typename NumberType>
-inline bool Kontrol::ListedeBulunuyor(const NumberType& id, const std::vector<ListType*>& liste)
+template<typename ListType>
+inline bool Kontrol::ListedeBulunuyor(const size_t& id, const std::vector<ListType*>& liste)
 {
 	if (!liste.empty()) {
 		if (id < liste.size()) {

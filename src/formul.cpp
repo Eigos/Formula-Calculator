@@ -21,6 +21,19 @@ Formul::Formul(const Formul& formulBase)
 
 }
 
+Formul::Formul(const std::string& formul, const std::vector<double>& degiskenler) {
+	
+	this->FormulYazimi = formul;
+
+	FormulCozumle();
+
+	for (uint32_t i = 0; i < DegiskenListesi.size(); i++) {
+		setDegiskenDeger(i, degiskenler[i]);
+	}
+
+}
+
+
 Formul::~Formul() {
 	for (int i = 0; i < DegiskenListesi.size(); i++) {
 		delete DegiskenListesi[i];
@@ -440,9 +453,6 @@ void Formul::IslemAraDegistirTek(std::string aranacakIslem, size_t& posBas, size
 	}
 }
 
-void Formul::IslemUzunlukGuncelle() {
-
-}
 
 std::string Formul::KimlikOlustur(unsigned int numara)
 {

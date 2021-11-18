@@ -24,7 +24,7 @@ const int Kontrol::DeneyYeni(Deney* deney)
 	return 0;
 }
 
-Status Kontrol::DeneySil(int& deneyID)
+Status Kontrol::DeneySil(uint32_t& deneyID)
 {
 	if (!ListedeBulunuyor(deneyID, deneyListesi)) {
 		return Status::Error;
@@ -34,7 +34,7 @@ Status Kontrol::DeneySil(int& deneyID)
 	return Status::Done;
 }
 
-const char* Kontrol::getDeneyAdi(int& deneyID)
+const char* Kontrol::getDeneyAdi(uint32_t& deneyID)
 {
 	if (!ListedeBulunuyor(deneyID, deneyListesi)) {
 		return nullptr;

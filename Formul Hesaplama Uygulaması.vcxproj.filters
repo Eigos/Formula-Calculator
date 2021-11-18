@@ -8,9 +8,6 @@
     <Filter Include="include">
       <UniqueIdentifier>{35fc85a2-3dae-43a5-95c1-7a40a7c8cc62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shaders">
-      <UniqueIdentifier>{1d4b8dfd-aa06-4fd6-ab7e-35604d7a8fbb}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Formul Hesaplama Uygulaması.cpp">
@@ -19,13 +16,7 @@
     <ClCompile Include="src\formul.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\glad.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\kontrol.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\shape.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -33,37 +24,8 @@
     <ClInclude Include="include\formul.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\glad.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\shape.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\kontrol.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\shader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\testShader1.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\testShader1.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\testCameraShader.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\testCameraShader.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\testColoredShader.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\testColoredShader.vert">
-      <Filter>shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

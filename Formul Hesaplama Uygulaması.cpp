@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <fstream>
-#include "raylib/raylib-cpp.hpp"
 
 #include "formul.h"
 #include "kontrol.h"
@@ -23,7 +22,7 @@ const static int PrecisionCount = 9;
 //void DeneyKumesiMenu();
 void DeneylerMenu();
 void DeneyMenu(int deneyID);
-void AnaMenu();
+int AnaMenu();
 void FormulMenu();
 void AyarlarMenu();
 
@@ -64,7 +63,7 @@ bool TestIslem(std::string formul, double beklenenSonuc, const std::vector<doubl
 	Formul testFormul(formul);
 	std::cout << std::endl << formul.c_str() << "\t Test ediliyor...\n";
 
-	for (int i = 0; i < degerler.size(); i++) {
+	for (uint32_t i = 0; i < degerler.size(); i++) {
 		std::cout << testFormul.getDegiskenIsim(i) << ": " << degerler[i] << std::endl;
 		testFormul.setDegiskenDeger(i, degerler[i]);
 	}
@@ -100,12 +99,15 @@ int main(int argCount, char* argv[])
 		}
 	}
 
-	
 	bool UI = true;
-	while (!onlyCalculation) {
-		if (UI) {
-			AnaMenu();
+	if (UI) {
+		bool UILoop = true;
+		while (UILoop) {
+			UILoop = !AnaMenu();
 		}
+	}
+
+	while (onlyCalculation) {
 		KomutGerceklestir(GirdiAlStr());
 	}
 
@@ -113,17 +115,28 @@ int main(int argCount, char* argv[])
 }
 
 
-
-
-void AnaMenu() {
-	std::cout << "1 Deneyler menu\t2 Kayit \n";
-	int girdi = GirdiAlInt();
-	if (girdi == 1) {
+int AnaMenu() {
+	ClearScreenWin();
+	std::cout << "1 Deneyler menu\t2 Kayit\t3 Cikis\n";
+	switch (GirdiAlIntMenu())
+	{
+	case 1: {
 		DeneylerMenu();
+		break;
 	}
-	else if (girdi == 2) {
+	case 2: {
 		AyarlarMenu();
+		break;
 	}
+
+	case 3: {
+		return 1;
+	}
+
+	default:
+		break;
+	}
+	return 0;
 }
 
 void DeneylerMenu() {
@@ -156,12 +169,12 @@ void DeneylerMenu() {
 
 			size_t deneySayisi = kontrol.getDeneySayisi();
 			std::cout << "Kayitli Deneyler: \n";
-			for (int i = 0; i < deneySayisi; i++) {
+			for (uint32_t i = 0; i < deneySayisi; i++) {
 				std::cout << "<" << i + 1 << ">" << kontrol.getDeneyAdi(i) << std::endl;
 			}
 
 			std::cout << "Silemk istediginiz deneyi seciniz: ";
-			int deneyNo = GirdiAlInt();
+			uint32_t deneyNo = GirdiAlInt();
 			std::cout << std::endl;
 
 			if ((deneyNo > 0) && (deneyNo <= deneySayisi)) {
@@ -197,7 +210,7 @@ void DeneylerMenu() {
 			size_t deneySayisi = kontrol.getDeneySayisi();
 			if (deneySayisi > 0) {
 				std::cout << "Kayitli Deneyler: \n";
-				for (int i = 0; i < deneySayisi; i++) {
+				for (uint32_t i = 0; i < deneySayisi; i++) {
 					const Deney* deney = kontrol.getDeney(i);
 					std::string deneyKulForm(deney->getFormulYazim());
 					const int deneyGosUzunluk = 35; // Deneyin formülünün gösterilicek uzunluğu
@@ -788,18 +801,18 @@ void YeniFormulOlusturma() {
 }
 
 inline int GirdiAlInt() {
-	std::string girdi;
+	std::string girdiStr;
 
-	int girdi_ = 0;
+	int girdiInt = 0;
 	try
 	{
-		std::getline(std::cin, girdi);
+		std::getline(std::cin, girdiStr);
 
-		if (girdi.empty()) {
+		if (girdiStr.empty()) {
 			return -1;
 		}
 
-		girdi_ = std::stoi(girdi);
+		girdiInt = std::stoi(girdiStr);
 	}
 	catch (const std::invalid_argument& e)
 	{
@@ -809,19 +822,19 @@ inline int GirdiAlInt() {
 
 
 		ClearScreenWin();
-		std::cout << "\nLutfen sayi giriniz!\n";
-		girdi_ = -1;
+		std::cout << "Lutfen sayi giriniz!\n";
+		girdiInt = -1;
 	}
 	catch (const std::out_of_range& e) {
 #ifdef DEBUG
 		std::cerr << e.what() << std::endl;
 #endif
 		ClearScreenWin();
-		std::cerr << "\nGirilen ifade fazla buyuk\n";
-		girdi_ = -1;
+		std::cerr << "Girilen ifade fazla buyuk\n";
+		girdiInt = -1;
 	}
 
-	return girdi_;
+	return girdiInt;
 }
 
 inline double GirdiAlDouble() {
@@ -875,9 +888,10 @@ inline int GirdiAlIntMenu() {
 		}
 
 		//Komut girildi ise
-		if (KomutKontrol(girdi)) {
+		if (KomutKontrol(girdi) != -1) {
 			std::string sonuc = KomutGerceklestir(girdi);
-			std::cout << std::endl << sonuc;
+			std::cout << std::endl <<"Sonuc: " << sonuc << std::endl;
+			system("Pause");
 			return -2;
 		}
 
@@ -907,10 +921,10 @@ inline int GirdiAlIntMenu() {
 
 int KomutKontrol(std::string metin) {
 	if (metin.empty()) {
-		return 0;
+		return -1;
 	}
 	if (metin[0] != '-') {
-		return 0;
+		return -1;
 	}
 
 	std::string komut = metin.substr(1, metin.find(" ", 0) - 1);
@@ -1051,7 +1065,6 @@ inline std::string GirdiAlStr() {
 	std::string girdi;
 	try {
 		std::getline(std::cin, girdi);
-		ClearScreenWin();
 	}
 	catch (std::invalid_argument& e) {
 		std::cout << e.what() << std::endl;

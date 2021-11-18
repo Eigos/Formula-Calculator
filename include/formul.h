@@ -29,21 +29,21 @@ enum class IslemTipi : int {
 };
 
 //Tek ve çift değişkene veya sabite bağımlı olan islemler
-static const int islemTuruCiftSayisi = 6;
-static const int islemTuruTekSayisi = 11;
+static const uint32_t islemTuruCiftSayisi = 6;
+static const uint32_t islemTuruTekSayisi = 11;
 
 
 //value operator value
-static const std::vector<const char*> islemTuruCift { "^", "*", "/", "mod", "-", "+" };
+static const std::vector<const char*> islemTuruCift{ "^", "*", "/", "mod", "-", "+" };
 
 //Do not forget to put parentheses to value
 //operator(value)
-static const std::vector<const char*> islemTuruTek { "abs", "sin", "cos", "tan", "cot", "sec", "csc", "log", "ln", "!", "-" };
+static const std::vector<const char*> islemTuruTek{ "abs", "sin", "cos", "tan", "cot", "sec", "csc", "log", "ln", "!", "-" };
 
 
 //	 						      --0123456789-0123456789-0123456789-0123456789-0123456789-0123456--
 static const char* alfabeListesi = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-static const int alfaListesiUzunluk = 62;
+static const uint32_t alfaListesiUzunluk = 62;
 
 class Formul {
 
@@ -60,7 +60,7 @@ private:
 	std::vector<Islem*> IslemListesi;
 	std::vector<double> IslemSonucListesi;
 	std::vector<double> SabitListesi;
-	double sonuc = 0;
+	double sonuc = 0.0;
 
 private:
 	int haneSayisi = 5;
@@ -68,7 +68,6 @@ private:
 
 	void IslemAraDegistirCift(std::string aranacakIslem, size_t& posBas, size_t& posSon, std::string& metin);
 	void IslemAraDegistirTek(std::string aranacakIslem, size_t& posBas, size_t& posSon, std::string& metin);
-	void IslemUzunlukGuncelle();
 	std::string KimlikOlustur(unsigned int numara);
 	size_t KimliktenDeger(std::string kimlik);
 
@@ -97,7 +96,7 @@ private:
 		IslemTipi islemTip = IslemTipi::DEF;
 		std::string degerIlk;
 		std::string degerIki;
-		double islemSonuc = 0;
+		double islemSonuc = 0.0;
 	};
 
 	struct Degisken {
@@ -119,15 +118,26 @@ private:
 
 
 public:
-	//örn (-a ((M*R^2*t^2)/(l*2*x)) - (M*R^2)  )
+
 	Formul();
+	
 	Formul(std::string& formul) :FormulYazimi(formul) { FormulCozumle(); }
+	
+	Formul(const std::string& formul) :FormulYazimi(formul) { FormulCozumle(); }
+	
 	Formul(std::string& formul, std::string& isim, std::string& aciklama) :
 		FormulYazimi(formul), FormulIsmi(isim), FormulAciklamasi(aciklama)
 	{
 		FormulCozumle();
 	}
+	
 	Formul(const Formul& formul);
+
+	Formul(const std::string& formul, const std::vector<double>& degiskenler);
+	
+	Formul(std::string& formul, std::vector<double>& degiskenler);
+
+
 	~Formul();
 
 	const int getDegiskenSayisi()const;
